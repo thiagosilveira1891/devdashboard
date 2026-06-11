@@ -1,0 +1,30 @@
+"use client";
+
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
+
+/**
+ * Entrada estándar del dashboard (PLANNING.md §8.1): fade + 8px de
+ * translate-y, 200ms ease-out, con stagger por `delay`.
+ * prefers-reduced-motion se respeta vía CSS global.
+ */
+export function FadeIn({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
