@@ -1,62 +1,85 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { Star } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/landing/logo";
+import { REPO_URL } from "@/components/landing/data";
+import { btnPrimary } from "@/components/landing/styles";
 
-const REPO_URL = "https://github.com/thiago/devdashboard";
+const NAV_LINKS = [
+  { label: "Features", href: "#features" },
+  { label: "Analytics", href: "#analytics" },
+  { label: "Open Source", href: "#open-source" },
+  { label: "Self Host", href: "#self-host" },
+];
 
-export function Navbar() {
+/** Estrellas reales del repo; si la API falla, el chip muestra solo "Star". */
+async function fetchStars(): Promise<string | null> {
+  try {
+    const res = await fetch(
+      "https://api.github.com/repos/thiago/devdashboard",
+      { next: { revalidate: 3600 } },
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { stargazers_count?: number };
+    const n = data.stargazers_count;
+    if (typeof n !== "number") return null;
+    return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : String(n);
+  } catch {
+    return null;
+  }
+}
+
+export async function Navbar() {
+  const stars = await fetchStars();
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[#27272a] bg-[#09090b]/80 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto flex items-center justify-between h-14 px-6">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="size-6 rounded bg-[#7c3aed]/15 border border-[#7c3aed]/30 grid place-items-center">
-              <span className="text-[#7c3aed] text-[10px] font-mono font-semibold">
-                {"</>"}
-              </span>
-            </div>
-            <span className="text-[15px] font-semibold tracking-tight text-[#fafafa]">
-              DevDash
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            {[
-              { label: "Features", href: "#features" },
-              { label: "Analytics", href: "#analytics" },
-              { label: "Open Source", href: "#open-source" },
-              { label: "Self Host", href: "#self-host" },
-            ].map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-[13px] text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </div>
+    <header className="sticky top-0 z-50 border-b border-[#27272A]/80 bg-[#09090B]/85 backdrop-blur-md">
+      <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+        <Link href="/" className="flex items-center gap-2.5">
+          <LogoMark />
+          <span className="text-[15px] font-semibold tracking-tight text-[#FAFAFA]">
+            DevDash
+          </span>
+        </Link>
+
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 md:flex">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-[13px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
         <div className="flex items-center gap-3">
           <a
             href={REPO_URL}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-[12px] text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
+            className="hidden h-8 items-center gap-2 rounded-md border border-[#27272A] px-3 text-[12px] text-[#A1A1AA] transition-colors hover:border-[#3F3F46] hover:text-[#FAFAFA] sm:flex"
           >
             <GithubIcon className="size-3.5" />
-            <span className="font-mono tabular-nums">0</span>
+            {stars ? (
+              <span className="flex items-center gap-1 font-mono tabular-nums">
+                <Star className="size-3 text-[#52525B]" />
+                {stars}
+              </span>
+            ) : (
+              <span>Star</span>
+            )}
           </a>
-          <Button
-            asChild
-            size="sm"
-            className="h-8 px-4 text-[12px] bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7] rounded-md font-medium"
+          <Link
+            href="/dashboard"
+            className="hidden text-[13px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA] sm:block"
           >
-            <Link href="/dashboard">
-              Get Started
-              <ArrowRight className="size-3 ml-1" />
-            </Link>
-          </Button>
+            Log in
+          </Link>
+          <Link href="/dashboard" className={`${btnPrimary} h-8 px-3.5 text-[12px]`}>
+            Get Started
+          </Link>
         </div>
       </div>
     </header>

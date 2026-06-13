@@ -2,46 +2,46 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { signIn } from "@/auth";
 import { GithubIcon } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import { DashboardPreview } from "@/components/landing/dashboard-preview";
+import { PLATFORMS } from "@/components/landing/data";
+import { btnPrimary, btnSecondary } from "@/components/landing/styles";
 import { isDemoMode } from "@/lib/demo";
-
-const PLATFORMS = ["GitHub", "LeetCode", "Codeforces", "WakaTime"];
 
 export function Hero() {
   const demo = isDemoMode();
 
   return (
-    <section className="relative max-w-6xl mx-auto px-6 pt-20 pb-24">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        {/* Left */}
+    <section className="mx-auto max-w-6xl px-6 pt-16 pb-24 lg:pt-24">
+      <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-10">
+        {/* Izquierda: copy */}
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#7c3aed]/20 bg-[#7c3aed]/10 px-3 py-1 text-[11px] text-[#7c3aed] font-medium mb-6">
-            <span className="size-1.5 rounded-full bg-[#7c3aed]" />
+          <p className="flex items-center gap-2 font-mono text-[11px] tracking-[0.18em] text-[#A1A1AA]">
+            <span className="size-1.5 rounded-full bg-[#22C55E]" aria-hidden />
             OPEN SOURCE · AGPL-3.0
-          </div>
-
-          <h1 className="text-4xl md:text-5xl lg:text-[56px] font-semibold tracking-tight text-[#fafafa] leading-[1.08]">
-            Your entire developer
-            <br />
-            journey.
-            <br />
-            <span className="text-[#7c3aed]">One dashboard.</span>
-          </h1>
-
-          <p className="text-[15px] text-[#a1a1aa] mt-5 max-w-md leading-relaxed">
-            Track commits, coding hours, problem solving, streaks and growth
-            across every platform you use — with your history saved forever.
           </p>
 
-          <div className="flex items-center gap-3 mt-8">
+          <h1 className="mt-6 text-[42px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#FAFAFA] md:text-[56px] lg:text-[48px] xl:text-[56px]">
+            Your entire <br className="hidden lg:inline" />
+            developer journey.
+            <br />
+            One dashboard.
+            <span
+              aria-hidden
+              className="ml-2 inline-block h-[0.8em] w-[3px] translate-y-[0.08em] bg-[#6366F1] animate-[landing-caret_1.1s_steps(1,end)_infinite]"
+            />
+          </h1>
+
+          <p className="mt-6 max-w-[440px] text-[15px] leading-relaxed text-[#A1A1AA] md:text-base">
+            Track commits, coding hours, problem solving, streaks and growth
+            across every platform you use — with history that never resets.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             {demo ? (
-              <Button asChild size="lg" className="h-10 px-6 text-[14px] bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7] rounded-md font-medium">
-                <Link href="/dashboard">
-                  View Demo
-                  <ArrowRight className="size-4 ml-1.5" />
-                </Link>
-              </Button>
+              <Link href="/dashboard" className={`${btnPrimary} h-10`}>
+                Get Started
+                <ArrowRight className="size-4" />
+              </Link>
             ) : (
               <form
                 action={async () => {
@@ -49,33 +49,41 @@ export function Hero() {
                   await signIn("github", { redirectTo: "/onboarding" });
                 }}
               >
-                <Button type="submit" size="lg" className="h-10 px-6 text-[14px] bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7] rounded-md font-medium">
-                  <GithubIcon className="size-4 mr-1.5" />
-                  Get Started
-                </Button>
+                <button type="submit" className={`${btnPrimary} h-10`}>
+                  <GithubIcon className="size-4" />
+                  Continue with GitHub
+                </button>
               </form>
             )}
-            <Button asChild variant="outline" size="lg" className="h-10 px-6 text-[14px] border-[#27272a] text-[#fafafa] hover:bg-[#111113] rounded-md">
-              <Link href="/dashboard">
-                View Demo
-              </Link>
-            </Button>
+            <Link href="/dashboard" className={`${btnSecondary} h-10`}>
+              View Demo
+            </Link>
           </div>
 
-          <div className="flex items-center gap-5 mt-10 text-[12px] text-[#52525b]">
-            {PLATFORMS.map((name, i) => (
-              <span key={name} className="flex items-center gap-5">
-                {i > 0 && <span className="size-1 rounded-full bg-[#27272a]" />}
-                {name}
-              </span>
-            ))}
+          <div className="mt-12">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[#52525B]">
+              PULLS DATA FROM
+            </p>
+            <ul className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+              {PLATFORMS.map((p) => (
+                <li
+                  key={p.name}
+                  className="flex items-center gap-2 text-[13px] text-[#A1A1AA]"
+                >
+                  <span
+                    className="size-1.5 rounded-full"
+                    style={{ backgroundColor: p.color }}
+                    aria-hidden
+                  />
+                  {p.name}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Right: Dashboard preview */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent z-10 pointer-events-none hidden lg:block" 
-               style={{ bottom: '-40px', height: '120px', top: 'auto' }} />
+        {/* Derecha: el screenshot es la pieza central — sangra hacia el borde */}
+        <div className="relative lg:-mr-16 xl:-mr-24">
           <DashboardPreview />
         </div>
       </div>

@@ -1,140 +1,218 @@
 "use client";
 
-import { useMemo } from "react";
-import { Flame, GitCommit, Clock, Code, Zap } from "lucide-react";
-import { Heatmap } from "@/components/dashboard/heatmap";
-import { computeDashboardData } from "@/lib/data/compute";
-import { getDemoSnapshots } from "@/seed/demo-data";
-import { formatHours, formatNumber } from "@/lib/format";
+import { useEffect, useMemo, useRef } from "react";
+import { Check, Flame, GitCommit, Zap } from "lucide-react";
+import { CountUp } from "@/components/landing/count-up";
+import { HeatmapMini } from "@/components/landing/heatmap-mini";
+import { LogoMark } from "@/components/landing/logo";
+import { Sparkline } from "@/components/landing/sparkline";
+import {
+  LANGUAGES,
+  generateHeatCells,
+  generateRatingSeries,
+} from "@/components/landing/data";
 
-const DEMO_USER = { name: "Ada Demo", username: "ada", profileSlug: "ada" };
+/**
+ * El centro del hero: un screenshot real del producto, renderizado en vivo
+ * (no una imagen). Ventana de navegador + app por dentro, con count-up en
+ * los KPIs, tooltips en el heatmap y un parallax sutil al hacer scroll.
+ */
+
+const KPIS = [
+  { label: "COMMITS", value: 287, delta: "+12.4%", deltaColor: "#22C55E" },
+  { label: "HOURS CODED", value: 142.6, decimals: 1, suffix: "h", delta: "+8.1%", deltaColor: "#22C55E" },
+  { label: "PROBLEMS SOLVED", value: 53, delta: "+24%", deltaColor: "#22C55E" },
+  { label: "DAY STREAK", value: 47, delta: "personal best", deltaColor: "#818CF8" },
+];
+
+const FEED = [
+  {
+    icon: <GitCommit className="size-3 text-[#52525B]" />,
+    text: "feat: merge wakatime heartbeats into unified timeline",
+    meta: "ada/devdash · 2h",
+  },
+  {
+    icon: <Check className="size-3 text-[#22C55E]" />,
+    text: "Binary Tree Cameras · Hard · accepted",
+    meta: "LeetCode · 5h",
+  },
+  {
+    icon: <Zap className="size-3 text-[#38BDF8]" />,
+    text: "Round #1042 Div. 2 · rating 1570 → 1612",
+    meta: "Codeforces · 2d",
+  },
+];
 
 export function DashboardPreview() {
-  const data = useMemo(
-    () =>
-      computeDashboardData({
-        snapshots: getDemoSnapshots(),
-        user: DEMO_USER,
-        rangeDays: 30,
-        connected: { github: true, wakatime: true, leetcode: true, codeforces: true },
-        isDemo: true,
-        lastSyncedAt: new Date().toISOString(),
-      }),
-    [],
-  );
+  const ref = useRef<HTMLDivElement>(null);
+  const heatCells = useMemo(() => generateHeatCells(32, 11), []);
+  const rating = useMemo(() => generateRatingSeries(28, 3), []);
+
+  // Parallax sutil: la ventana se desplaza ±10px contra el scroll.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        const mid = window.innerHeight / 2;
+        const delta = (r.top + r.height / 2 - mid) / mid;
+        el.style.transform = `translateY(${(delta * 10).toFixed(1)}px)`;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
-    <div className="rounded-lg border border-[#27272a] bg-[#09090b] overflow-hidden shadow-2xl shadow-black/40">
-      {/* Title bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#27272a] bg-[#0c0c0e]">
-        <div className="flex items-center gap-1.5">
-          <div className="size-2.5 rounded-full bg-[#ef4444]/70" />
-          <div className="size-2.5 rounded-full bg-[#f59e0b]/70" />
-          <div className="size-2.5 rounded-full bg-[#22c55e]/70" />
+    <div
+      ref={ref}
+      className="overflow-hidden rounded-lg border border-[#27272A] bg-[#0C0C0E] shadow-[0_16px_40px_-20px_rgba(0,0,0,0.7)] will-change-transform"
+    >
+      {/* Chrome del navegador */}
+      <div className="flex h-9 items-center gap-2 border-b border-[#27272A] bg-[#111113] px-3.5">
+        <div className="flex items-center gap-1.5" aria-hidden>
+          <span className="size-2.5 rounded-full bg-[#27272A]" />
+          <span className="size-2.5 rounded-full bg-[#27272A]" />
+          <span className="size-2.5 rounded-full bg-[#27272A]" />
         </div>
-        <span className="text-[11px] text-[#52525b] ml-2 font-mono tracking-tight">
+        <div className="mx-auto flex h-6 items-center rounded-md border border-[#27272A] bg-[#09090B] px-3 font-mono text-[10px] text-[#52525B]">
           devdash.app/u/ada
-        </span>
-        <div className="ml-auto flex items-center gap-1.5 rounded-md border border-[#27272a] bg-[#111113] px-2.5 h-6">
-          <Flame className="size-3 text-[#f59e0b]" />
-          <span className="font-mono text-[11px] font-semibold tabular-nums text-[#fafafa]">
-            {data.streak.current}
-          </span>
-          <span className="text-[10px] text-[#a1a1aa]">días</span>
+        </div>
+        <div className="hidden items-center gap-1.5 font-mono text-[10px] text-[#52525B] sm:flex">
+          <span className="size-1.5 rounded-full bg-[#22C55E]" aria-hidden />
+          synced 2m ago
         </div>
       </div>
 
-      {/* Dashboard content */}
-      <div className="p-4 space-y-3">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div>
-            <div className="h-3.5 w-32 rounded bg-[#1c1c1f] animate-pulse" />
-            <div className="h-2.5 w-44 rounded bg-[#1c1c1f] animate-pulse mt-1.5" />
-          </div>
-          <div className="ml-auto flex items-center gap-1.5 rounded-md border border-[#27272a] bg-[#111113] px-2 h-6">
-            <span className="text-[10px] text-[#7c3aed] font-medium mr-0.5">CCS</span>
-            <span className="font-mono text-[11px] font-semibold tabular-nums text-[#7c3aed]">
-              {data.ccs?.score ?? 78}
+      {/* Barra de la app */}
+      <div className="flex h-11 items-center gap-3 border-b border-[#1C1C1F] px-4">
+        <LogoMark size={16} />
+        <span className="text-[12px] font-medium text-[#FAFAFA]">Ada Lovelace</span>
+        <span className="font-mono text-[10px] text-[#52525B]">@ada</span>
+        <div className="ml-auto flex h-6 overflow-hidden rounded-md border border-[#27272A] bg-[#111113]">
+          {["7d", "30d", "90d", "1y"].map((r) => (
+            <span
+              key={r}
+              className={`flex items-center px-2 font-mono text-[10px] ${
+                r === "30d" ? "bg-[#1C1C1F] text-[#FAFAFA]" : "text-[#52525B]"
+              }`}
+            >
+              {r}
             </span>
-          </div>
-          <div className="flex rounded-md border border-[#27272a] bg-[#111113] overflow-hidden h-6">
-            {["7d", "30d", "90d", "1y"].map((r, i) => (
-              <span
-                key={r}
-                className={`px-2 text-[10px] flex items-center ${i === 1 ? "bg-[#1c1c1f] text-[#fafafa]" : "text-[#52525b]"}`}
-              >
-                {r}
-              </span>
-            ))}
-          </div>
+          ))}
         </div>
+        <div className="flex h-6 items-center gap-1.5 rounded-md border border-[#27272A] bg-[#111113] px-2">
+          <Flame className="size-3 text-[#F59E0B]" />
+          <span className="font-mono text-[11px] font-semibold tabular-nums text-[#FAFAFA]">
+            47
+          </span>
+        </div>
+      </div>
 
-        {/* KPIs */}
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { icon: <GitCommit className="size-3" />, label: "Commits", value: formatNumber(data.kpis.commits.value) },
-            { icon: <Clock className="size-3" />, label: "Horas", value: formatHours(data.kpis.codingSeconds.value) },
-            { icon: <Code className="size-3" />, label: "Problemas", value: formatNumber(data.kpis.problemsSolved.value) },
-            { icon: <Zap className="size-3" />, label: "Rating CF", value: data.rating.current ? String(data.rating.current) : "—" },
-          ].map((kpi) => (
-            <div key={kpi.label} className="rounded-md border border-[#27272a] bg-[#111113] p-2.5">
-              <div className="flex items-center gap-1 text-[10px] text-[#a1a1aa]">
-                {kpi.icon}
+      <div className="space-y-3 p-4">
+        {/* KPIs con count-up */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {KPIS.map((kpi) => (
+            <div
+              key={kpi.label}
+              className="rounded-md border border-[#27272A]/60 bg-[#111113] p-3"
+            >
+              <p className="font-mono text-[9px] tracking-[0.08em] text-[#52525B]">
                 {kpi.label}
-              </div>
-              <p className="font-mono text-[17px] font-semibold tabular-nums text-[#fafafa] mt-0.5">
-                {kpi.value}
+              </p>
+              <p className="mt-1 font-mono text-[20px] font-semibold tabular-nums leading-none text-[#FAFAFA]">
+                <CountUp
+                  value={kpi.value}
+                  decimals={kpi.decimals ?? 0}
+                  suffix={kpi.suffix ?? ""}
+                />
+              </p>
+              <p
+                className="mt-1.5 font-mono text-[9px]"
+                style={{ color: kpi.deltaColor }}
+              >
+                {kpi.delta}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Heatmap */}
-        <div className="rounded-md border border-[#27272a] bg-[#111113] p-3">
-          <p className="text-[10px] text-[#a1a1aa] mb-2">Actividad · últimos 3 meses</p>
-          <Heatmap cells={data.heatmap.slice(-91)} />
+        {/* Heatmap unificado con tooltips */}
+        <div className="rounded-md border border-[#27272A]/60 bg-[#111113] p-3">
+          <div className="mb-2.5 flex items-baseline justify-between">
+            <p className="text-[11px] font-medium text-[#A1A1AA]">
+              Unified activity
+            </p>
+            <p className="font-mono text-[9px] text-[#52525B]">
+              commits + hours + problems
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <HeatmapMini cells={heatCells} cellSize={10} gap={3} interactive />
+          </div>
         </div>
 
-        {/* Languages + Languages row */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-md border border-[#27272a] bg-[#111113] p-3">
-            <p className="text-[10px] text-[#a1a1aa] mb-2">Lenguajes</p>
-            <div className="space-y-1.5">
-              {data.languages.slice(0, 4).map((l) => (
+        {/* Lenguajes + rating */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-md border border-[#27272A]/60 bg-[#111113] p-3">
+            <p className="mb-2.5 text-[11px] font-medium text-[#A1A1AA]">
+              Languages
+            </p>
+            <div className="space-y-2">
+              {LANGUAGES.slice(0, 4).map((l) => (
                 <div key={l.name} className="flex items-center gap-2">
-                  <span className="text-[11px] text-[#fafafa] w-20 truncate">{l.name}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-[#1c1c1f] overflow-hidden">
+                  <span className="w-[72px] truncate text-[11px] text-[#E4E4E7]">
+                    {l.name}
+                  </span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#1C1C1F]">
                     <div
-                      className="h-full rounded-full bg-[#7c3aed]"
-                      style={{ width: `${l.pct}%` }}
+                      className="h-full rounded-full"
+                      style={{ width: `${l.pct}%`, backgroundColor: l.color }}
                     />
                   </div>
-                  <span className="text-[10px] text-[#52525b] font-mono tabular-nums w-8 text-right">
+                  <span className="w-8 text-right font-mono text-[10px] tabular-nums text-[#52525B]">
                     {l.pct}%
                   </span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="rounded-md border border-[#27272a] bg-[#111113] p-3">
-            <p className="text-[10px] text-[#a1a1aa] mb-2">Rating</p>
-            <div className="h-16 flex items-end gap-0.5">
-              {data.rating.codeforces.slice(-30).map((p, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-sm bg-[#7c3aed]/60"
-                  style={{ height: `${Math.max(4, ((p.rating - 1300) / 400) * 100)}%` }}
-                />
-              ))}
+          <div className="rounded-md border border-[#27272A]/60 bg-[#111113] p-3">
+            <div className="flex items-baseline justify-between">
+              <p className="text-[11px] font-medium text-[#A1A1AA]">Codeforces</p>
+              <p className="font-mono text-[9px] text-[#22C55E]">+42</p>
             </div>
-            <div className="flex justify-between text-[9px] text-[#52525b] mt-1">
-              <span>30d</span>
-              <span className="text-[#7c3aed] font-medium">
-                {data.rating.current ?? "—"} {data.rating.currentRank ?? ""}
-              </span>
+            <p className="mt-1 font-mono text-[18px] font-semibold tabular-nums leading-none text-[#38BDF8]">
+              1,612
+              <span className="ml-1.5 text-[10px] font-normal">Expert</span>
+            </p>
+            <div className="mt-2 h-11">
+              <Sparkline data={rating} width={220} height={44} stroke="#38BDF8" />
             </div>
           </div>
+        </div>
+
+        {/* Feed de actividad */}
+        <div className="divide-y divide-[#1C1C1F] rounded-md border border-[#27272A]/60 bg-[#111113]">
+          {FEED.map((item) => (
+            <div key={item.text} className="flex h-8 items-center gap-2 px-3">
+              {item.icon}
+              <span className="truncate text-[11px] text-[#A1A1AA]">
+                {item.text}
+              </span>
+              <span className="ml-auto shrink-0 font-mono text-[9px] text-[#52525B]">
+                {item.meta}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

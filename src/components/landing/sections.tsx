@@ -1,129 +1,195 @@
 import Link from "next/link";
-import { ArrowRight, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Check, ExternalLink } from "lucide-react";
+import { HeatmapMini } from "@/components/landing/heatmap-mini";
+import { LogoMark } from "@/components/landing/logo";
+import { REPO_URL, generateHeatCells } from "@/components/landing/data";
+import { btnPrimary, btnSecondary, eyebrow } from "@/components/landing/styles";
 
-const REPO_URL = "https://github.com/thiago/devdashboard";
+/* ============================== Comparison ============================== */
 
-const ROWS = [
+const COLUMNS = [
+  { key: "gh", label: "GitHub" },
+  { key: "lc", label: "LeetCode" },
+  { key: "wt", label: "WakaTime" },
+  { key: "dd", label: "DevDash" },
+] as const;
+
+const ROWS: { feature: string; gh: boolean; lc: boolean; wt: boolean; dd: boolean }[] = [
   { feature: "Commits", gh: true, lc: false, wt: false, dd: true },
   { feature: "Coding hours", gh: false, lc: false, wt: true, dd: true },
   { feature: "Problems solved", gh: false, lc: true, wt: false, dd: true },
-  { feature: "Rating evolution", gh: false, lc: true, wt: false, dd: true },
-  { feature: "Language stats", gh: false, lc: false, wt: true, dd: true },
-  { feature: "Unified heatmap", gh: false, lc: false, wt: false, dd: true },
-  { feature: "Period comparison", gh: false, lc: false, wt: false, dd: true },
-  { feature: "Public profile", gh: true, lc: false, wt: false, dd: true },
-  { feature: "History forever", gh: false, lc: false, wt: false, dd: true },
-  { feature: "Open source", gh: false, lc: false, wt: false, dd: true },
+  { feature: "Contest rating", gh: false, lc: true, wt: false, dd: true },
+  { feature: "Language stats", gh: true, lc: false, wt: true, dd: true },
+  { feature: "Streaks", gh: false, lc: true, wt: false, dd: true },
+  { feature: "Unified timeline", gh: false, lc: false, wt: false, dd: true },
+  { feature: "Self-hosted, open source", gh: false, lc: false, wt: false, dd: true },
 ];
-
-const PLATFORM_COLS = [
-  { key: "gh", label: "GitHub", color: "#fafafa" },
-  { key: "lc", label: "LeetCode", color: "#f59e0b" },
-  { key: "wt", label: "WakaTime", color: "#7c3aed" },
-  { key: "dd", label: "DevDash", color: "#22c55e" },
-] as const;
 
 export function ComparisonSection() {
   return (
-    <section className="max-w-6xl mx-auto px-6 py-24 border-t border-[#27272a]">
-      <div className="text-center mb-12">
-        <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-[#fafafa]">
-          Why DevDash?
+    <section className="border-t border-[#27272A]">
+      <div className="mx-auto max-w-6xl px-6 py-24">
+        <p className={eyebrow}>COMPARE</p>
+        <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
+          One tool instead of four tabs.
         </h2>
-        <p className="text-[14px] text-[#a1a1aa] mt-3">
-          Each platform shows a piece. DevDash shows everything.
+        <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[#A1A1AA]">
+          Each platform tracks a slice. DevDash tracks the developer.
         </p>
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-[13px]">
-          <thead>
-            <tr className="border-b border-[#27272a]">
-              <th className="text-left py-3 font-medium text-[#a1a1aa] w-[180px]">Feature</th>
-              {PLATFORM_COLS.map((col) => (
-                <th
-                  key={col.key}
-                  className="text-center py-3 font-medium w-[100px]"
-                  style={{ color: col.color }}
-                >
-                  {col.label}
+        <div className="mt-10 overflow-x-auto">
+          <table className="w-full min-w-[560px] border-collapse text-[13px]">
+            <thead>
+              <tr className="border-b border-[#27272A]">
+                <th className="w-[220px] py-3 text-left font-mono text-[11px] font-medium tracking-[0.08em] text-[#52525B]">
+                  FEATURE
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ROWS.map((row, i) => (
-              <tr key={i} className="border-b border-[#27272a]/50">
-                <td className="py-2.5 text-[#fafafa]">{row.feature}</td>
-                {PLATFORM_COLS.map((col) => (
-                  <td key={col.key} className="text-center py-2.5">
-                    {row[col.key as keyof typeof row] ? (
-                      <span className="text-[#22c55e]">✓</span>
+                {COLUMNS.map((col) => (
+                  <th
+                    key={col.key}
+                    className={`w-[110px] py-3 text-center text-[13px] font-medium ${
+                      col.key === "dd"
+                        ? "bg-[#6366F1]/[0.06] text-[#FAFAFA]"
+                        : "text-[#A1A1AA]"
+                    }`}
+                  >
+                    {col.key === "dd" ? (
+                      <span className="inline-flex items-center gap-2">
+                        <LogoMark size={12} />
+                        {col.label}
+                      </span>
                     ) : (
-                      <span className="text-[#27272a]">—</span>
+                      col.label
                     )}
-                  </td>
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {ROWS.map((row) => (
+                <tr key={row.feature} className="border-b border-[#27272A]/50">
+                  <td className="py-3 text-[#E4E4E7]">{row.feature}</td>
+                  {COLUMNS.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`py-3 text-center ${
+                        col.key === "dd" ? "bg-[#6366F1]/[0.06]" : ""
+                      }`}
+                    >
+                      {row[col.key] ? (
+                        <Check
+                          className={`mx-auto size-3.5 ${
+                            col.key === "dd" ? "text-[#22C55E]" : "text-[#A1A1AA]"
+                          }`}
+                          aria-label="yes"
+                        />
+                      ) : (
+                        <span className="text-[#3F3F46]" aria-label="no">
+                          –
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );
 }
+
+/* ================================= CTA ================================= */
 
 export function CTASection() {
   return (
-    <section className="max-w-6xl mx-auto px-6 py-24 border-t border-[#27272a] text-center">
-      <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-[#fafafa]">
-        Start tracking your entire
-        <br />
-        developer journey.
-      </h2>
-      <p className="text-[15px] text-[#a1a1aa] mt-4 max-w-md mx-auto">
-        Open source. Self-hostable. Free forever.
-      </p>
-      <div className="flex items-center justify-center gap-3 mt-8">
-        <Button asChild size="lg" className="h-10 px-6 text-[14px] bg-[#fafafa] text-[#09090b] hover:bg-[#e4e4e7] rounded-md font-medium">
-          <Link href="/dashboard">
-            Get Started
-            <ArrowRight className="size-4 ml-1.5" />
-          </Link>
-        </Button>
-        <Button asChild variant="outline" size="lg" className="h-10 px-6 text-[14px] border-[#27272a] text-[#fafafa] hover:bg-[#111113] rounded-md">
-          <a href={REPO_URL} target="_blank" rel="noreferrer">
-            View GitHub
-            <ExternalLink className="size-3.5 ml-1.5" />
-          </a>
-        </Button>
+    <section className="relative overflow-hidden border-t border-[#27272A]">
+      {/* Muro de contribuciones desvanecido tras el titular */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-20"
+        style={{
+          maskImage:
+            "radial-gradient(ellipse 55% 65% at 50% 50%, black, transparent)",
+        }}
+      >
+        <HeatmapMini cells={generateHeatCells(64, 21)} cellSize={12} gap={3} />
       </div>
-    </section>
-  );
-}
 
-export function Footer() {
-  return (
-    <footer className="border-t border-[#27272a]">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6 text-[12px]">
-          <span className="text-[#52525b]">DevDash</span>
+      <div className="relative mx-auto max-w-6xl px-6 py-28 text-center">
+        <h2 className="text-[32px] font-semibold leading-[1.1] tracking-tight text-[#FAFAFA] md:text-[40px]">
+          Start tracking your entire
+          <br />
+          developer journey.
+        </h2>
+        <p className="mt-4 text-[14px] text-[#A1A1AA]">
+          Free and open source. Connect your accounts in five minutes.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href="/dashboard" className={`${btnPrimary} h-10`}>
+            Get Started
+            <ArrowRight className="size-4" />
+          </Link>
           <a
             href={REPO_URL}
             target="_blank"
             rel="noreferrer"
-            className="text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
+            className={`${btnSecondary} h-10`}
           >
-            GitHub
+            View GitHub
+            <ExternalLink className="size-3.5" />
           </a>
-          <Link href="/docs/self-hosting" className="text-[#a1a1aa] hover:text-[#fafafa] transition-colors">
-            Documentation
-          </Link>
-          <span className="text-[#a1a1aa]">Self Host</span>
-          <span className="text-[#a1a1aa]">Privacy</span>
         </div>
-        <span className="text-[11px] text-[#52525b] border border-[#27272a] rounded px-2 py-0.5">
+      </div>
+    </section>
+  );
+}
+
+/* ================================ Footer ================================ */
+
+const FOOTER_LINKS = [
+  { label: "GitHub", href: REPO_URL, external: true },
+  { label: "Documentation", href: "/docs/self-hosting", external: false },
+  { label: "Self Host", href: "/docs/self-hosting", external: false },
+  { label: "Privacy", href: "/privacy", external: false },
+];
+
+export function Footer() {
+  return (
+    <footer className="border-t border-[#27272A]">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
+        <div className="flex items-center gap-2.5">
+          <LogoMark size={14} />
+          <span className="text-[13px] text-[#A1A1AA]">DevDash</span>
+          <span className="font-mono text-[11px] text-[#52525B]">© 2026</span>
+        </div>
+
+        <nav className="flex items-center gap-6">
+          {FOOTER_LINKS.map((link) =>
+            link.external ? (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[12px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-[12px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
+        </nav>
+
+        <span className="rounded border border-[#27272A] px-2 py-0.5 font-mono text-[11px] text-[#52525B]">
           AGPL-3.0
         </span>
       </div>

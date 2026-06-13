@@ -2,37 +2,34 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { REPO_URL } from "@/components/landing/data";
 
-const CODE = `# Clone and run
-git clone https://github.com/thiago/devdashboard
+const COPY_TEXT = `git clone ${REPO_URL}.git
 cd devdashboard
-pnpm install
-pnpm dev
+docker compose up -d`;
 
-# That's it. Opens with demo data.
-# Configure .env for production.`;
-
+/** Terminal de self-hosting: tres comandos y el servicio levantado. */
 export function CodeBlock() {
   const [copied, setCopied] = useState(false);
 
   function copy() {
-    navigator.clipboard.writeText(CODE).then(() => {
+    navigator.clipboard.writeText(COPY_TEXT).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   }
 
   return (
-    <div className="relative rounded-lg border border-[#27272a] bg-[#0c0c0e] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#27272a]">
-        <span className="text-[11px] text-[#52525b] font-mono">terminal</span>
+    <div className="overflow-hidden rounded-lg border border-[#27272A] bg-[#0C0C0E]">
+      <div className="flex items-center justify-between border-b border-[#27272A] px-4 py-2.5">
+        <span className="font-mono text-[11px] text-[#52525B]">~/devdash</span>
         <button
           onClick={copy}
-          className="flex items-center gap-1 text-[11px] text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
+          className="flex items-center gap-1.5 text-[11px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
         >
           {copied ? (
             <>
-              <Check className="size-3" />
+              <Check className="size-3 text-[#22C55E]" />
               Copied
             </>
           ) : (
@@ -43,23 +40,31 @@ export function CodeBlock() {
           )}
         </button>
       </div>
-      <div className="p-4 overflow-x-auto">
-        <pre className="text-[12px] font-mono text-[#a1a1aa] leading-relaxed whitespace-pre">
-          <span className="text-[#52525b]"># Clone and run</span>
+      <div className="overflow-x-auto p-4">
+        <pre className="font-mono text-[12px] leading-[1.8] text-[#A1A1AA]">
+          <span className="text-[#52525B]">$</span>{" "}
+          <span className="text-[#22C55E]">git</span>{" "}
+          <span className="text-[#E4E4E7]">clone {REPO_URL}.git</span>
           {"\n"}
-          <span className="text-[#22c55e]">git clone</span>{" "}
-          <span className="text-[#fafafa]">https://github.com/thiago/devdashboard</span>
+          <span className="text-[#52525B]">$</span>{" "}
+          <span className="text-[#22C55E]">cd</span>{" "}
+          <span className="text-[#E4E4E7]">devdashboard</span>
           {"\n"}
-          <span className="text-[#22c55e]">cd</span>{" "}
-          <span className="text-[#fafafa]">devdashboard</span>
+          <span className="text-[#52525B]">$</span>{" "}
+          <span className="text-[#22C55E]">docker</span>{" "}
+          <span className="text-[#E4E4E7]">compose up -d</span>
           {"\n"}
-          <span className="text-[#22c55e]">pnpm install</span>
+          <span className="text-[#22C55E]">  ✔</span> devdash{"    "}
+          <span className="text-[#52525B]">running on :3000</span>
           {"\n"}
-          <span className="text-[#22c55e]">pnpm dev</span>
-          {"\n\n"}
-          <span className="text-[#52525b]"># That&apos;s it. Opens with demo data.</span>
+          <span className="text-[#22C55E]">  ✔</span> postgres{"   "}
+          <span className="text-[#52525B]">healthy</span>
           {"\n"}
-          <span className="text-[#52525b]"># Configure .env for production.</span>
+          <span className="text-[#52525B]">$</span>{" "}
+          <span
+            aria-hidden
+            className="inline-block h-[1.1em] w-[7px] translate-y-[0.2em] bg-[#6366F1] animate-[landing-caret_1.1s_steps(1,end)_infinite]"
+          />
         </pre>
       </div>
     </div>
