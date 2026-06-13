@@ -1,6 +1,7 @@
 import { LogoMark } from "@/components/landing/logo";
 import { HeatmapMini } from "@/components/landing/heatmap-mini";
 import { PLATFORMS, generateHeatCells } from "@/components/landing/data";
+import { getDict } from "@/components/landing/i18n";
 import { eyebrow } from "@/components/landing/styles";
 
 /**
@@ -12,17 +13,17 @@ import { eyebrow } from "@/components/landing/styles";
 // Centros de las 4 columnas (en % del ancho) → coordenadas del viewBox
 const SOURCE_X = [12.5, 37.5, 62.5, 87.5];
 
-export function ProblemSection() {
+export async function ProblemSection() {
+  const t = await getDict();
   return (
     <section className="border-t border-[#27272A]">
       <div className="mx-auto max-w-6xl px-6 py-24">
-        <p className={eyebrow}>THE PROBLEM</p>
+        <p className={eyebrow}>{t.problem.eyebrow}</p>
         <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
-          Your developer data is scattered.
+          {t.problem.title}
         </h2>
         <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[#A1A1AA]">
-          Four platforms, four tabs, four partial versions of you. None of them
-          shows the whole picture.
+          {t.problem.body}
         </p>
 
         <div className="relative mt-14">
@@ -112,7 +113,7 @@ export function ProblemSection() {
                     DevDash
                   </p>
                   <p className="font-mono text-[11px] text-[#A1A1AA]">
-                    single profile · complete history
+                    {t.problem.nodeSub}
                   </p>
                 </div>
               </div>

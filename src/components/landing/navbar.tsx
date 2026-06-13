@@ -2,15 +2,12 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { GithubIcon } from "@/components/icons";
 import { LogoMark } from "@/components/landing/logo";
+import { LanguageToggle } from "@/components/landing/language-toggle";
 import { REPO_URL } from "@/components/landing/data";
+import { getDict, getLocale } from "@/components/landing/i18n";
 import { btnPrimary } from "@/components/landing/styles";
 
-const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "Analytics", href: "#analytics" },
-  { label: "Open Source", href: "#open-source" },
-  { label: "Self Host", href: "#self-host" },
-];
+const NAV_HREFS = ["#features", "#analytics", "#open-source", "#self-host"] as const;
 
 /** Estrellas reales del repo; si la API falla, el chip muestra solo "Star". */
 async function fetchStars(): Promise<string | null> {
@@ -30,7 +27,12 @@ async function fetchStars(): Promise<string | null> {
 }
 
 export async function Navbar() {
-  const stars = await fetchStars();
+  const [stars, locale, t] = await Promise.all([
+    fetchStars(),
+    getLocale(),
+    getDict(),
+  ]);
+  const navLabels = [t.nav.features, t.nav.analytics, t.nav.openSource, t.nav.selfHost];
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#27272A]/80 bg-[#09090B]/85 backdrop-blur-md">
@@ -42,19 +44,20 @@ export async function Navbar() {
           </span>
         </Link>
 
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 md:flex">
-          {NAV_LINKS.map((link) => (
+        <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex">
+          {NAV_HREFS.map((href, i) => (
             <a
-              key={link.href}
-              href={link.href}
+              key={href}
+              href={href}
               className="text-[13px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
             >
-              {link.label}
+              {navLabels[i]}
             </a>
           ))}
         </nav>
 
         <div className="flex items-center gap-3">
+          <LanguageToggle locale={locale} />
           <a
             href={REPO_URL}
             target="_blank"
@@ -68,17 +71,17 @@ export async function Navbar() {
                 {stars}
               </span>
             ) : (
-              <span>Star</span>
+              <span>{t.nav.star}</span>
             )}
           </a>
           <Link
             href="/dashboard"
             className="hidden text-[13px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA] sm:block"
           >
-            Log in
+            {t.nav.login}
           </Link>
           <Link href="/dashboard" className={`${btnPrimary} h-8 px-3.5 text-[12px]`}>
-            Get Started
+            {t.nav.getStarted}
           </Link>
         </div>
       </div>

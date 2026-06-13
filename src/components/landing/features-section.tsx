@@ -7,6 +7,7 @@ import {
   generateHeatCells,
   generateRatingSeries,
 } from "@/components/landing/data";
+import { getDict, type Dict } from "@/components/landing/i18n";
 import { eyebrow } from "@/components/landing/styles";
 
 /**
@@ -58,26 +59,15 @@ function WeeklyChart() {
   );
 }
 
-type Feature = {
+type FeaturePreview = {
+  key: keyof Dict["features"]["items"];
   id?: string;
-  label: string;
-  title: string;
-  description: string;
-  specs: string[];
   preview: ReactNode;
 };
 
-const FEATURES: Feature[] = [
+const FEATURE_PREVIEWS: FeaturePreview[] = [
   {
-    label: "TIMELINE",
-    title: "Unified activity timeline",
-    description:
-      "One contribution graph for everything you do as a developer. Commits, coding hours and problems solved, merged into a single heatmap with per-platform filters.",
-    specs: [
-      "One graph for commits, hours and problems",
-      "365-day history that never resets",
-      "Filter by platform or see everything at once",
-    ],
+    key: "timeline",
     preview: (
       <div className="rounded-lg border border-[#27272A] bg-[#111113] p-4">
         <div className="mb-3 flex flex-wrap items-center gap-1.5">
@@ -113,16 +103,8 @@ const FEATURES: Feature[] = [
     ),
   },
   {
+    key: "analytics",
     id: "analytics",
-    label: "ANALYTICS",
-    title: "Developer analytics",
-    description:
-      "Week-over-week comparisons, productivity patterns and automatic insights about when and how you actually code.",
-    specs: [
-      "Compare any period against the last one",
-      "Productivity breakdown by weekday",
-      "Insights generated from your own data",
-    ],
     preview: (
       <div className="rounded-lg border border-[#27272A] bg-[#111113] p-4">
         <div className="mb-3 flex items-baseline justify-between">
@@ -148,15 +130,7 @@ const FEATURES: Feature[] = [
     ),
   },
   {
-    label: "LANGUAGES",
-    title: "Language tracking",
-    description:
-      "Distribution measured from real coding time in your editor — not just the bytes sitting in your repos.",
-    specs: [
-      "Tracked from actual editor activity",
-      "Repos and coding time, combined",
-      "Trends per language over any range",
-    ],
+    key: "languages",
     preview: (
       <div className="rounded-lg border border-[#27272A] bg-[#111113] p-4">
         <div className="flex h-2 overflow-hidden rounded-full">
@@ -197,15 +171,7 @@ const FEATURES: Feature[] = [
     ),
   },
   {
-    label: "COMPETITIVE",
-    title: "Competitive programming",
-    description:
-      "LeetCode and Codeforces, side by side. Rating evolution, problems by difficulty and contest history in one view.",
-    specs: [
-      "Rating evolution with rank context",
-      "Problems broken down by difficulty",
-      "Contest history across both judges",
-    ],
+    key: "competitive",
     preview: (
       <div className="grid gap-3 rounded-lg border border-[#27272A] bg-[#111113] p-4 sm:grid-cols-2">
         <div>
@@ -269,52 +235,56 @@ const FEATURES: Feature[] = [
   },
 ];
 
-export function FeaturesSection() {
+export async function FeaturesSection() {
+  const t = await getDict();
   return (
     <section id="features" className="border-t border-[#27272A]">
       <div className="mx-auto max-w-6xl px-6 py-24">
-        <p className={eyebrow}>FEATURES</p>
+        <p className={eyebrow}>{t.features.eyebrow}</p>
         <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
-          Everything in one place.
+          {t.features.title}
         </h2>
         <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[#A1A1AA]">
-          Four platforms in. One developer profile out.
+          {t.features.body}
         </p>
 
         <div className="mt-20 space-y-24">
-          {FEATURES.map((feature, i) => (
-            <div
-              key={feature.title}
-              id={feature.id}
-              className="grid items-center gap-10 scroll-mt-24 lg:grid-cols-2 lg:gap-16"
-            >
-              <div className={i % 2 === 1 ? "lg:order-2" : ""}>
-                <p className={eyebrow}>{feature.label}</p>
-                <h3 className="mt-3 text-[22px] font-semibold tracking-tight text-[#FAFAFA] md:text-[26px]">
-                  {feature.title}
-                </h3>
-                <p className="mt-3 max-w-md text-[14px] leading-relaxed text-[#A1A1AA]">
-                  {feature.description}
-                </p>
-                <ul className="mt-5 space-y-2">
-                  {feature.specs.map((spec) => (
-                    <li
-                      key={spec}
-                      className="flex gap-2.5 text-[13px] text-[#A1A1AA]"
-                    >
-                      <span className="font-mono text-[#22C55E]" aria-hidden>
-                        +
-                      </span>
-                      {spec}
-                    </li>
-                  ))}
-                </ul>
+          {FEATURE_PREVIEWS.map((feature, i) => {
+            const copy = t.features.items[feature.key];
+            return (
+              <div
+                key={feature.key}
+                id={feature.id}
+                className="grid items-center gap-10 scroll-mt-24 lg:grid-cols-2 lg:gap-16"
+              >
+                <div className={i % 2 === 1 ? "lg:order-2" : ""}>
+                  <p className={eyebrow}>{copy.label}</p>
+                  <h3 className="mt-3 text-[22px] font-semibold tracking-tight text-[#FAFAFA] md:text-[26px]">
+                    {copy.title}
+                  </h3>
+                  <p className="mt-3 max-w-md text-[14px] leading-relaxed text-[#A1A1AA]">
+                    {copy.description}
+                  </p>
+                  <ul className="mt-5 space-y-2">
+                    {copy.specs.map((spec) => (
+                      <li
+                        key={spec}
+                        className="flex gap-2.5 text-[13px] text-[#A1A1AA]"
+                      >
+                        <span className="font-mono text-[#22C55E]" aria-hidden>
+                          +
+                        </span>
+                        {spec}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className={i % 2 === 1 ? "lg:order-1" : ""}>
+                  {feature.preview}
+                </div>
               </div>
-              <div className={i % 2 === 1 ? "lg:order-1" : ""}>
-                {feature.preview}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

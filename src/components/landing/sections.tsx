@@ -3,6 +3,7 @@ import { ArrowRight, Check, ExternalLink } from "lucide-react";
 import { HeatmapMini } from "@/components/landing/heatmap-mini";
 import { LogoMark } from "@/components/landing/logo";
 import { REPO_URL, generateHeatCells } from "@/components/landing/data";
+import { getDict } from "@/components/landing/i18n";
 import { btnPrimary, btnSecondary, eyebrow } from "@/components/landing/styles";
 
 /* ============================== Comparison ============================== */
@@ -25,16 +26,17 @@ const ROWS: { feature: string; gh: boolean; lc: boolean; wt: boolean; dd: boolea
   { feature: "Self-hosted, open source", gh: false, lc: false, wt: false, dd: true },
 ];
 
-export function ComparisonSection() {
+export async function ComparisonSection() {
+  const t = await getDict();
   return (
     <section className="border-t border-[#27272A]">
       <div className="mx-auto max-w-6xl px-6 py-24">
-        <p className={eyebrow}>COMPARE</p>
+        <p className={eyebrow}>{t.compare.eyebrow}</p>
         <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
-          One tool instead of four tabs.
+          {t.compare.title}
         </h2>
         <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[#A1A1AA]">
-          Each platform tracks a slice. DevDash tracks the developer.
+          {t.compare.body}
         </p>
 
         <div className="mt-10 overflow-x-auto">
@@ -42,7 +44,7 @@ export function ComparisonSection() {
             <thead>
               <tr className="border-b border-[#27272A]">
                 <th className="w-[220px] py-3 text-left font-mono text-[11px] font-medium tracking-[0.08em] text-[#52525B]">
-                  FEATURE
+                  {t.compare.featureHeader}
                 </th>
                 {COLUMNS.map((col) => (
                   <th
@@ -66,9 +68,9 @@ export function ComparisonSection() {
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((row) => (
+              {ROWS.map((row, i) => (
                 <tr key={row.feature} className="border-b border-[#27272A]/50">
-                  <td className="py-3 text-[#E4E4E7]">{row.feature}</td>
+                  <td className="py-3 text-[#E4E4E7]">{t.compare.rows[i]}</td>
                   {COLUMNS.map((col) => (
                     <td
                       key={col.key}
@@ -102,7 +104,8 @@ export function ComparisonSection() {
 
 /* ================================= CTA ================================= */
 
-export function CTASection() {
+export async function CTASection() {
+  const t = await getDict();
   return (
     <section className="relative overflow-hidden border-t border-[#27272A]">
       {/* Muro de contribuciones desvanecido tras el titular */}
@@ -119,16 +122,16 @@ export function CTASection() {
 
       <div className="relative mx-auto max-w-6xl px-6 py-28 text-center">
         <h2 className="text-[32px] font-semibold leading-[1.1] tracking-tight text-[#FAFAFA] md:text-[40px]">
-          Start tracking your entire
+          {t.cta.title1}
           <br />
-          developer journey.
+          {t.cta.title2}
         </h2>
         <p className="mt-4 text-[14px] text-[#A1A1AA]">
-          Free and open source. Connect your accounts in five minutes.
+          {t.cta.body}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link href="/dashboard" className={`${btnPrimary} h-10`}>
-            Get Started
+            {t.cta.primary}
             <ArrowRight className="size-4" />
           </Link>
           <a
@@ -137,7 +140,7 @@ export function CTASection() {
             rel="noreferrer"
             className={`${btnSecondary} h-10`}
           >
-            View GitHub
+            {t.cta.secondary}
             <ExternalLink className="size-3.5" />
           </a>
         </div>
@@ -149,13 +152,20 @@ export function CTASection() {
 /* ================================ Footer ================================ */
 
 const FOOTER_LINKS = [
-  { label: "GitHub", href: REPO_URL, external: true },
-  { label: "Documentation", href: "/docs/self-hosting", external: false },
-  { label: "Self Host", href: "/docs/self-hosting", external: false },
-  { label: "Privacy", href: "/privacy", external: false },
-];
+  { key: "github", href: REPO_URL, external: true },
+  { key: "docs", href: "/docs/self-hosting", external: false },
+  { key: "selfHost", href: "/docs/self-hosting", external: false },
+  { key: "privacy", href: "/privacy", external: false },
+] as const;
 
-export function Footer() {
+export async function Footer() {
+  const t = await getDict();
+  const labels: Record<(typeof FOOTER_LINKS)[number]["key"], string> = {
+    github: "GitHub",
+    docs: t.footer.docs,
+    selfHost: t.footer.selfHost,
+    privacy: t.footer.privacy,
+  };
   return (
     <footer className="border-t border-[#27272A]">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
@@ -169,21 +179,21 @@ export function Footer() {
           {FOOTER_LINKS.map((link) =>
             link.external ? (
               <a
-                key={link.label}
+                key={link.key}
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
                 className="text-[12px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
               >
-                {link.label}
+                {labels[link.key]}
               </a>
             ) : (
               <Link
-                key={link.label}
+                key={link.key}
                 href={link.href}
                 className="text-[12px] text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
               >
-                {link.label}
+                {labels[link.key]}
               </Link>
             ),
           )}

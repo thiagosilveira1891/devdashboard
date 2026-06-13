@@ -2,23 +2,24 @@ import Link from "next/link";
 import { Flame } from "lucide-react";
 import { HeatmapMini } from "@/components/landing/heatmap-mini";
 import { PROFILES, generateHeatCells } from "@/components/landing/data";
+import { getDict } from "@/components/landing/i18n";
 import { eyebrow } from "@/components/landing/styles";
 
 /**
  * Social proof sin testimonios: perfiles públicos con datos en vivo,
  * como tarjetas de usuario de GitHub.
  */
-export function ProfilesSection() {
+export async function ProfilesSection() {
+  const t = await getDict();
   return (
     <section className="border-t border-[#27272A]">
       <div className="mx-auto max-w-6xl px-6 py-24">
-        <p className={eyebrow}>PROFILES</p>
+        <p className={eyebrow}>{t.profiles.eyebrow}</p>
         <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
-          Proof, not testimonials.
+          {t.profiles.title}
         </h2>
         <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[#A1A1AA]">
-          Every DevDash account gets a public profile — live data you can share
-          like a résumé, not quotes on a landing page.
+          {t.profiles.body}
         </p>
 
         <div className="mt-12 grid gap-4 md:grid-cols-3">
@@ -51,9 +52,9 @@ export function ProfilesSection() {
 
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {[
-                  { value: p.commits, label: "commits" },
-                  { value: p.hours, label: "coded" },
-                  { value: p.problems, label: "problems" },
+                  { value: p.commits, label: t.profiles.stats.commits },
+                  { value: p.hours, label: t.profiles.stats.coded },
+                  { value: p.problems, label: t.profiles.stats.problems },
                 ].map((s) => (
                   <div key={s.label}>
                     <p className="font-mono text-[15px] font-semibold tabular-nums text-[#FAFAFA]">
@@ -69,7 +70,7 @@ export function ProfilesSection() {
               <div className="mt-4 flex items-center gap-1.5 border-t border-[#1C1C1F] pt-3">
                 <Flame className="size-3 text-[#F59E0B]" />
                 <span className="font-mono text-[11px] text-[#A1A1AA]">
-                  {p.streak} day streak
+                  {t.profiles.streak.replace("{n}", String(p.streak))}
                 </span>
               </div>
             </div>
@@ -77,7 +78,7 @@ export function ProfilesSection() {
         </div>
 
         <p className="mt-6 text-[12px] text-[#52525B]">
-          Profiles are public pages — see a live one at{" "}
+          {t.profiles.footerPre}{" "}
           <Link
             href="/u/ada"
             className="font-mono text-[#A1A1AA] transition-colors hover:text-[#FAFAFA]"
