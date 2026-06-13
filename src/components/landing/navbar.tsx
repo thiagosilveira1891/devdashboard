@@ -12,10 +12,11 @@ const NAV_HREFS = ["/#features", "/#analytics", "/#open-source", "/#self-host"] 
 /** Estrellas reales del repo; si la API falla, el chip muestra solo "Star". */
 async function fetchStars(): Promise<string | null> {
   try {
-    const res = await fetch(
-      "https://api.github.com/repos/thiago/devdashboard",
-      { next: { revalidate: 3600 } },
+    const apiUrl = REPO_URL.replace(
+      "https://github.com/",
+      "https://api.github.com/repos/",
     );
+    const res = await fetch(apiUrl, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     const data = (await res.json()) as { stargazers_count?: number };
     const n = data.stargazers_count;

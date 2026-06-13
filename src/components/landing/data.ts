@@ -3,7 +3,7 @@
 // La landing fuerza tema oscuro, así que sus colores van hardcodeados aquí
 // (no dependen del toggle de tema del dashboard).
 
-export const REPO_URL = "https://github.com/thiago/devdashboard";
+export const REPO_URL = "https://github.com/thiagosilveira1891/devdashboard";
 
 export const HEAT_COLORS = [
   "#161618",
