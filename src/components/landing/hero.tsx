@@ -14,9 +14,9 @@ export async function Hero() {
 
   return (
     <section className="mx-auto max-w-6xl px-6 pt-16 pb-24 lg:pt-24">
-      <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-10">
+      <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-10">
         {/* Izquierda: copy */}
-        <div>
+        <div className="min-w-0">
           <p className="flex items-center gap-2 font-mono text-[11px] tracking-[0.18em] text-[#A1A1AA]">
             <span className="size-1.5 rounded-full bg-[#22C55E]" aria-hidden />
             {t.hero.eyebrow}
@@ -84,7 +84,7 @@ export async function Hero() {
         </div>
 
         {/* Derecha: el screenshot es la pieza central — sangra hacia el borde */}
-        <div className="relative lg:-mr-16 xl:-mr-24">
+        <div className="relative min-w-0 lg:-mr-16 xl:-mr-24">
           <DashboardPreview />
         </div>
       </div>

@@ -15,8 +15,8 @@ export async function OpenSourceSection() {
   const t = await getDict();
   return (
     <section id="open-source" className="border-t border-[#27272A] scroll-mt-14">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-24 lg:grid-cols-2">
-        <div>
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-2">
+        <div className="min-w-0">
           <p className={eyebrow}>{t.openSource.eyebrow}</p>
           <h2 className="mt-3 text-[28px] font-semibold tracking-tight text-[#FAFAFA] md:text-[36px]">
             {t.openSource.title1}
@@ -61,7 +61,7 @@ export async function OpenSourceSection() {
           </dl>
         </div>
 
-        <div id="self-host" className="scroll-mt-24">
+        <div id="self-host" className="min-w-0 scroll-mt-24">
           <CodeBlock />
         </div>
       </div>

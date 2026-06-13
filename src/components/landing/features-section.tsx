@@ -255,9 +255,9 @@ export async function FeaturesSection() {
               <div
                 key={feature.key}
                 id={feature.id}
-                className="grid items-center gap-10 scroll-mt-24 lg:grid-cols-2 lg:gap-16"
+                className="grid grid-cols-1 items-center gap-10 scroll-mt-24 lg:grid-cols-2 lg:gap-16"
               >
-                <div className={i % 2 === 1 ? "lg:order-2" : ""}>
+                <div className={`min-w-0 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
                   <p className={eyebrow}>{copy.label}</p>
                   <h3 className="mt-3 text-[22px] font-semibold tracking-tight text-[#FAFAFA] md:text-[26px]">
                     {copy.title}
@@ -279,7 +279,7 @@ export async function FeaturesSection() {
                     ))}
                   </ul>
                 </div>
-                <div className={i % 2 === 1 ? "lg:order-1" : ""}>
+                <div className={`min-w-0 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
                   {feature.preview}
                 </div>
               </div>
