@@ -7,7 +7,7 @@ import { REPO_URL } from "@/components/landing/data";
 import { getDict, getLocale } from "@/components/landing/i18n";
 import { btnPrimary } from "@/components/landing/styles";
 
-const NAV_HREFS = ["#features", "#analytics", "#open-source", "#self-host"] as const;
+const NAV_HREFS = ["/#features", "/#analytics", "/#open-source", "/#self-host"] as const;
 
 /** Estrellas reales del repo; si la API falla, el chip muestra solo "Star". */
 async function fetchStars(): Promise<string | null> {
