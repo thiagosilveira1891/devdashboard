@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { GithubIcon } from "@/components/icons";
+import {
+  CodeforcesIcon,
+  GithubIcon,
+  LeetcodeIcon,
+  WakatimeIcon,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -28,29 +33,17 @@ const PLATFORM_META: Record<
   wakatime: {
     label: "WakaTime",
     description: "Horas programadas, lenguajes",
-    icon: (
-      <span className="text-[#8b5cf6] text-[15px] font-mono font-semibold">
-        W
-      </span>
-    ),
+    icon: <WakatimeIcon className="size-5 text-[#8b5cf6]" />,
   },
   leetcode: {
     label: "LeetCode",
     description: "Problemas, contests",
-    icon: (
-      <span className="text-[#ffa116] text-[15px] font-mono font-semibold">
-        LC
-      </span>
-    ),
+    icon: <LeetcodeIcon className="size-5 text-[#ffa116]" />,
   },
   codeforces: {
     label: "Codeforces",
     description: "Rating, contests",
-    icon: (
-      <span className="text-[#1f8acb] text-[15px] font-mono font-semibold">
-        CF
-      </span>
-    ),
+    icon: <CodeforcesIcon className="size-5 text-[#1f8acb]" />,
   },
 };
 

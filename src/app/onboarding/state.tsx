@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { GithubIcon } from "@/components/icons";
+import {
+  CodeforcesIcon,
+  GithubIcon,
+  LeetcodeIcon,
+  WakatimeIcon,
+} from "@/components/icons";
 import { FadeIn } from "@/components/motion/fade-in";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +48,7 @@ export function OnboardingState({
       <FadeIn delay={0.1}>
         <Card className="p-4 flex items-center gap-3">
           <div className="size-9 rounded-md bg-[#2c1a4b]/30 flex items-center justify-center shrink-0">
-            <span className="text-[#8b5cf6] text-[15px] font-mono font-semibold">W</span>
+            <WakatimeIcon className="size-5 text-[#8b5cf6]" />
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-medium">WakaTime</p>
@@ -76,7 +81,7 @@ export function OnboardingState({
       <FadeIn delay={0.15}>
         <Card className="p-4 flex items-center gap-3">
           <div className="size-9 rounded-md bg-[#ffa116]/15 flex items-center justify-center shrink-0">
-            <span className="text-[#ffa116] text-[15px] font-mono font-semibold">LC</span>
+            <LeetcodeIcon className="size-5 text-[#ffa116]" />
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-medium">LeetCode</p>
@@ -98,7 +103,7 @@ export function OnboardingState({
       <FadeIn delay={0.2}>
         <Card className="p-4 flex items-center gap-3">
           <div className="size-9 rounded-md bg-[#1f8acb]/15 flex items-center justify-center shrink-0">
-            <span className="text-[#1f8acb] text-[15px] font-mono font-semibold">CF</span>
+            <CodeforcesIcon className="size-5 text-[#1f8acb]" />
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-medium">Codeforces</p>
